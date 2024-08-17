@@ -8,9 +8,11 @@ namespace DemoService;
 public class DemoIoDevice(ILogger logger): IIoDevice
 {
     private readonly List<AnalogInput> _analogInputs = [];
-    private readonly GpsInput _gasInput = new GpsInput();
+    private readonly GpsInput _gpsInput = new GpsInput(){
+        IoPort = new GpsPort(),
+    };
 
-    #region Parameters
+    #region Parameters for input simulation
 
     private int _sampleFrequency = 4096;
     private Int64 _sampleCounter = 0;
@@ -29,7 +31,10 @@ public class DemoIoDevice(ILogger logger): IIoDevice
     {
         for (int i = 0; i < 4; ++i)
         {
-            _analogInputs.Add(new AnalogInput());
+            _analogInputs.Add(new AnalogInput(){
+                Calibrater = new TransducerCalibrater(),
+                IoPort = new AnalogPort(),
+            });
         }
 
         return true;
@@ -37,14 +42,14 @@ public class DemoIoDevice(ILogger logger): IIoDevice
 
     public bool StartSample()
     {
-        //临时用Task使用线程池执行，因为这里使用了Sleep，所以似乎不应该使用Task,而使用独立的Thread
+        //Use task for generating data, It may be better to use Thread here
         _sampling = true;
         _sampleTask = Task.Run(
             () =>
             {
                 while (_sampling)
                 {
-                    //模拟生成数据
+                    //Generate sine wave
                     var raw = new float[_sampleFrequency];
                     for (int i = 0; i < _sampleFrequency; ++i)
                     {
@@ -52,12 +57,28 @@ public class DemoIoDevice(ILogger logger): IIoDevice
                     }
                     _sampleCounter += _sampleFrequency;
                     
-                    //每个通道生成相同的数据
+                    //Same data for every analog input
                     foreach (var analogInput in _analogInputs)
                     {
-                        //analogInput.ioPort.Add(raw);
+                        double[] values = new double[_sampleFrequency];
+                        for(int i=0; i<_sampleFrequency; ++i){
+                            values[i] = analogInput.Calibrater.Convert((double)raw[i]);
+                        }
+                        analogInput.InputStream.Add(values);
                     }
                     logger.LogInformation($"Demo {_sampleFrequency} generated");
+
+                    //Generate GPS 
+                    var Location = new Location(){
+                        Latitude = 0,
+                        Longitude = 0,
+                        Altitude = 0,
+                    };
+                    var Speed = 0.0;
+                    _gpsInput.Location.Add(Location);
+                    _gpsInput.Speed.Add(Speed);
+                    logger.LogInformation($"Demo gps generated");
+
                     Thread.Sleep(1000);
                 }
             });

@@ -13,6 +13,28 @@ AsApplication application = new AsApplication()
 };
 application.Configure(null);
 
+CommandManager commandManager = new CommandManager();
+CommandParser commandParser = new CommandParser(commandManager);
+
+AppContext context = new AppContext(){
+    Application = application,
+    commandManager = commandManager,
+};
+
+bool continueRun = true;
+while(continueRun){
+    var cmd = Console.ReadLine();
+    if(cmd == null){
+        continue;
+    }
+    ICommand? command = commandParser.Parse(cmd);
+    if(command == null){
+        Console.WriteLine("Invalid command");
+    }else{
+        command?.Run(context);
+    }
+}
+
 
 application.StartSample();
 var counter = 10;

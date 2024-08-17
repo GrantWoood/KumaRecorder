@@ -1,6 +1,6 @@
 namespace AsAbstract;
 
-public class IIoPort
+public interface IIoPort
 {
     
 }
