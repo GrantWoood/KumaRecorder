@@ -20,7 +20,8 @@ AppContext context = new AppContext(){
     Application = application,
     commandManager = commandManager,
 };
-
+Console.WriteLine("Welcome to KumaRecorder.");
+Console.WriteLine("");
 bool continueRun = true;
 while(continueRun){
     var cmd = Console.ReadLine();
@@ -31,18 +32,18 @@ while(continueRun){
     if(command == null){
         Console.WriteLine("Invalid command");
     }else{
-        command?.Run(context);
+        command?.Run(context, ref continueRun);
     }
 }
 
 
-application.StartSample();
-var counter = 10;
-while (counter > 0)
-{
-    Console.WriteLine($"Sample running {counter}...");
-    Thread.Sleep(1000);
-    --counter;
-}
-application.StopSample();
-Console.WriteLine("Exit.");
+// application.StartSample();
+// var counter = 10;
+// while (counter > 0)
+// {
+//     Console.WriteLine($"Sample running {counter}...");
+//     Thread.Sleep(1000);
+//     --counter;
+// }
+// application.StopSample();
+// Console.WriteLine("Exit.");
