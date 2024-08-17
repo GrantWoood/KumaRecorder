@@ -7,6 +7,8 @@ public class AsApplication
 {
     private readonly List<IIoService> _ioServices = [];
     public IIoServiceFactory? IoServiceFactory { get; set; } = null;
+
+    public List<IIoService> IoServices => _ioServices;
     public bool Configure(IConfigurationRoot? configurationRoot)
     {
         var service = IoServiceFactory!.Create("");

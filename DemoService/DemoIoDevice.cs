@@ -8,9 +8,12 @@ namespace DemoService;
 public class DemoIoDevice(ILogger logger): IIoDevice
 {
     private readonly List<AnalogInput> _analogInputs = [];
-    private readonly GpsInput _gpsInput = new GpsInput(){
-        IoPort = new GpsPort(),
-    };
+    private GpsInput? _gpsInput = null;
+    private string _name;
+    public string Name{
+        get { return _name; }
+        set { _name = value; }
+    }
 
     #region Parameters for input simulation
 
@@ -34,10 +37,31 @@ public class DemoIoDevice(ILogger logger): IIoDevice
             _analogInputs.Add(new AnalogInput(){
                 Calibrater = new TransducerCalibrater(),
                 IoPort = new AnalogPort(),
+                IoDevice = this,
             });
         }
-
+        _gpsInput =  new GpsInput(){
+            IoPort = new GpsPort(),
+            IoDevice = this,
+        };
         return true;
+    }
+
+    public List<IIoChannel> GetInputChannels(){
+        List<IIoChannel> channels = [];
+        channels.AddRange(_analogInputs);
+        if(_gpsInput!=null)
+            channels.Add(_gpsInput);
+        return channels;
+    }
+
+    public List<IDataStream> GetInputStreams(){
+        var channels = GetInputChannels();
+        List<IDataStream> streams = [];
+        foreach(var channel in channels){
+            streams.AddRange(channel.GetInputStreams());
+        }
+        return streams;
     }
 
     public bool StartSample()

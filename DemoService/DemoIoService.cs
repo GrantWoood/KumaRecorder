@@ -14,6 +14,13 @@ public class DemoIoService(ILogger logger): IIoService
         return true;
     }
 
+    public List<IIoChannel> GetInputChannels(){
+        return _device.GetInputChannels();
+    }
+    public List<IDataStream> GetInputStreams(){
+        return _device.GetInputStreams();
+    }
+
     public bool StartSample()
     {
         logger.LogInformation("Demo io service is running");
