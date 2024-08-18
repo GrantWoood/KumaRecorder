@@ -1,7 +1,7 @@
 using AsAbstract;
 
-namespace AsBasic;
-public class AnalogPort: IIoPort{
+namespace DemoService;
+class GpsPort: IIoPort{
     private string _Id = string.Empty;
     public string Id { 
         get { return _Id; } 

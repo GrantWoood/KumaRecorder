@@ -9,11 +9,21 @@ public class DemoIoDevice(ILogger logger): IIoDevice
 {
     private readonly List<AnalogInput> _analogInputs = [];
     private GpsInput? _gpsInput = null;
-    private string _name;
+    private string _name = string.Empty;
     public string Name{
-        get { return _name; }
+        get { 
+            if(_name.Length == 0){
+                return $"{Manufacture}-{Model}-{SN}";
+            } else {
+                return _name;
+            }
+        }
         set { _name = value; }
     }
+
+    public string Manufacture => "As";
+    public string Model => "Demo";
+    public string SN=>"DE001";
 
     #region Parameters for input simulation
 
@@ -35,11 +45,20 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         for (int i = 0; i < 4; ++i)
         {
             _analogInputs.Add(new AnalogInput(){
-                Calibrater = new TransducerCalibrater(),
+                Calibrater = new TransducerCalibrater() ,
                 IoPort = new AnalogPort(),
                 IoDevice = this,
             });
         }
+        //2Vibration and 2 Sound for analog inputs
+        (_analogInputs[0].Calibrater as TransducerCalibrater)!.UnitPhysical = "G";
+        (_analogInputs[0].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
+        (_analogInputs[1].Calibrater as TransducerCalibrater)!.UnitPhysical = "G";
+        (_analogInputs[1].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
+        (_analogInputs[2].Calibrater as TransducerCalibrater)!.UnitPhysical = "Pa";
+        (_analogInputs[2].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
+        (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitPhysical = "Pa";
+        (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
             IoPort = new GpsPort(),
             IoDevice = this,

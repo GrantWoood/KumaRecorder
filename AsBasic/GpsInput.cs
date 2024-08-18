@@ -5,8 +5,12 @@ namespace AsBasic;
 
 public class GpsInput: IIoChannel
 {
-    public DiscontinuousStream<Location> Location = new DiscontinuousStream<Location>();
-    public DiscontinuousStream<double> Speed = new DiscontinuousStream<double>();
+    public DiscontinuousStream<Location> Location = new DiscontinuousStream<Location>(){
+        Usage = Usage.Location
+    };
+    public DiscontinuousStream<double> Speed = new DiscontinuousStream<double>(){
+        Usage = Usage.Speed
+    };
     public required IIoPort IoPort { get; set; }
     public required IIoDevice IoDevice { get; set; }
     public string Name{get;set;} = string.Empty;

@@ -1,8 +1,11 @@
+using System.Dynamic;
 using AsAbstract;
 
 namespace AsBasic;
 
 public class TransducerCalibrater: ICalibrater{
+    public string TransducerName{get;set;} = String.Empty;
+    public string TransducerId{get;set;} = string.Empty;
     public double Sensitivity{get;set;} = 1.0;
     public string UnitPhysical{get;set;} = String.Empty;//G, Pa, ...
     public string UnitMeasure{get;set;} = String.Empty;//mV, pC

@@ -78,9 +78,9 @@ public class ListPorts : ICommand{
     public string PrintInput(IIoChannel channel){
         StringBuilder stringBuilder= new StringBuilder();
         //var inputStreams = channel.GetInputStreams();
-        //stringBuilder.Append(channel.IoDevice.Name);
-        //stringBuilder.Append("  ");
-        //stringBuilder.Append(channel.IoPort.Id);
+        stringBuilder.Append(channel.IoDevice.Name);
+        stringBuilder.Append("  ");
+        stringBuilder.Append(channel.Name);
         //stringBuilder.Append("  ");
         //stringBuilder.Append(channel.Name);
         stringBuilder.Append(channel.ToString());
