@@ -6,4 +6,5 @@ public interface IIoChannel
     IIoPort IoPort { get; }
     string Name { get; set;}
     List<IDataStream> GetInputStreams();
+
 }

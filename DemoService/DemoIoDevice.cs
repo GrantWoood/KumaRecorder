@@ -46,7 +46,9 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         {
             _analogInputs.Add(new AnalogInput(){
                 Calibrater = new TransducerCalibrater() ,
-                IoPort = new AnalogPort(),
+                IoPort = new AnalogPort(){
+                    Id = $"A0{i}",
+                },
                 IoDevice = this,
             });
         }
@@ -60,7 +62,9 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitPhysical = "Pa";
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
-            IoPort = new GpsPort(),
+            IoPort = new GpsPort(){
+                Id = "GPS01"
+            },
             IoDevice = this,
         };
         return true;
@@ -118,8 +122,8 @@ public class DemoIoDevice(ILogger logger): IIoDevice
                         Altitude = 0,
                     };
                     var Speed = 0.0;
-                    _gpsInput.Location.Add(Location);
-                    _gpsInput.Speed.Add(Speed);
+                    _gpsInput!.Location.Add(Location);
+                    _gpsInput!.Speed.Add(Speed);
                     logger.LogInformation($"Demo gps generated");
 
                     Thread.Sleep(1000);

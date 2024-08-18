@@ -77,13 +77,42 @@ public class ListPorts : ICommand{
 
     public string PrintInput(IIoChannel channel){
         StringBuilder stringBuilder= new StringBuilder();
-        //var inputStreams = channel.GetInputStreams();
+        var inputStreams = channel.GetInputStreams();
         stringBuilder.Append(channel.IoDevice.Name);
-        stringBuilder.Append("  ");
-        stringBuilder.Append(channel.Name);
+        stringBuilder.Append("-");
+        stringBuilder.Append(channel.IoPort.Id);
+        /* Relative with hardware directly
+        Analog: Connection, Range, Mode, Gain, Offset, Sensitivity/Other Calibrater, ...
+        Can: Connection, CAN1.0/Can2.0, BitRate, Filters, CanDB...
+        Gps: Connection, BitRate, Filters, ...
+        NetCamera: Connection, FPS, Protocol
+
+        Connect: DeviceName - PortId
+            As-Demo-DE001-A01
+            As-Demo-DE001-CAN01
+            As-Demo-DE001-GPS01
+            Rtsp://192.168.1.35:502/01
+        */
+        stringBuilder.Append("");
+
+        /*Streams in this channel, show the value, other properties may by setable, such as default color, usage, ....
+        Analog: ----
+            A: v
+        Can: ----
+            V1: v
+            V2: v
+        Gps: ----
+            Location: la,lo,al
+            Speed: speed
+        NetCamera: --- 
+            Video: 
+            Audio-Left:
+            Audio-Right:
+        */
+
         //stringBuilder.Append("  ");
         //stringBuilder.Append(channel.Name);
-        stringBuilder.Append(channel.ToString());
+        //stringBuilder.Append(channel.ToString());
         return stringBuilder.ToString();
     }
 
