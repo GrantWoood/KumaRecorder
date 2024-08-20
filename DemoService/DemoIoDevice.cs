@@ -46,9 +46,7 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         {
             _analogInputs.Add(new AnalogInput(){
                 Calibrater = new TransducerCalibrater() ,
-                IoPort = new AnalogPort(){
-                    Id = $"A0{i}",
-                },
+                IoPort = new AnalogPort(),
                 IoDevice = this,
             });
         }
@@ -62,9 +60,7 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitPhysical = "Pa";
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
-            IoPort = new GpsPort(){
-                Id = "GPS01"
-            },
+            IoPort = new GpsPort(),
             IoDevice = this,
         };
         return true;
@@ -78,11 +74,11 @@ public class DemoIoDevice(ILogger logger): IIoDevice
         return channels;
     }
 
-    public List<IDataStream> GetInputStreams(){
+    public List<IDataAdapter> GetInputAdapters(){
         var channels = GetInputChannels();
-        List<IDataStream> streams = [];
+        List<IDataAdapter> streams = [];
         foreach(var channel in channels){
-            streams.AddRange(channel.GetInputStreams());
+            streams.AddRange(channel.GetInputAdapters());
         }
         return streams;
     }
@@ -107,11 +103,12 @@ public class DemoIoDevice(ILogger logger): IIoDevice
                     //Same data for every analog input
                     foreach (var analogInput in _analogInputs)
                     {
-                        double[] values = new double[_sampleFrequency];
-                        for(int i=0; i<_sampleFrequency; ++i){
-                            values[i] = analogInput.Calibrater.Convert((double)raw[i]);
-                        }
-                        analogInput.InputStream.Add(values);
+                        // double[] values = new double[_sampleFrequency];
+                        // for(int i=0; i<_sampleFrequency; ++i){
+                        //     values[i] = analogInput.Calibrater.Convert((double)raw[i]);
+                        // }
+                        //analogInput..Add(values);
+                        analogInput.AddRaw(raw);
                     }
                     logger.LogInformation($"Demo {_sampleFrequency} generated");
 

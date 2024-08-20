@@ -17,8 +17,8 @@ public class DemoIoService(ILogger logger): IIoService
     public List<IIoChannel> GetInputChannels(){
         return _device.GetInputChannels();
     }
-    public List<IDataStream> GetInputStreams(){
-        return _device.GetInputStreams();
+    public List<IDataAdapter> GetInputAdapters(){
+        return _device.GetInputAdapters();
     }
 
     public bool StartSample()

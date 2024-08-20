@@ -4,12 +4,6 @@ namespace DemoService;
 
 public class AnalogPort: IIoPort
 {
-    private string _Id = string.Empty;
-    public string Id { 
-        get { return _Id; } 
-        set{ _Id = value;}
-    }
-
     public enum RangeLevel{
         R10V,
         R1V,

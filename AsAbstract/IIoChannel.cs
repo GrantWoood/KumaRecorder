@@ -5,6 +5,7 @@ public interface IIoChannel
     IIoDevice IoDevice{ get; }
     IIoPort IoPort { get; }
     string Name { get; set;}
-    List<IDataStream> GetInputStreams();
 
+    public List<IDataAdapter> GetInputAdapters();
+    public List<IDataAdapter> GetOutputAdapters();
 }

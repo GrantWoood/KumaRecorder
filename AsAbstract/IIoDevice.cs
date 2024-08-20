@@ -7,7 +7,7 @@ public interface IIoDevice
     string Name { get; set;}
     bool Configure(IConfigurationSection? configurationSection);
     List<IIoChannel> GetInputChannels();
-    List<IDataStream> GetInputStreams();
+    List<IDataAdapter> GetInputAdapters();
     bool StartSample();
     bool StopSample();
 }
