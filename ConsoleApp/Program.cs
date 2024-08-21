@@ -2,14 +2,17 @@
 using ConsoleApp;
 using DemoService;
 using Microsoft.Extensions.Logging;
+using AsBasic;
 
 using ILoggerFactory factory = LoggerFactory.Create(
     builder => builder.AddConsole());
 ILogger logger = factory.CreateLogger("AsConsole");
 
+SyncManager syncManager= new SyncManager(new SystemSynchronizer());
+
 AsApplication application = new AsApplication()
 {
-    IoServiceFactory = new IoServiceFactory(logger),
+    IoServiceFactory = new IoServiceFactory(logger, syncManager),
 };
 application.Configure(null);
 

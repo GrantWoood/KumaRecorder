@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AsAbstract;
 using AsBasic;
 using Microsoft.Extensions.Configuration;
@@ -5,9 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace DemoService;
 
-public class DemoIoDevice(ILogger logger): IIoDevice
+public class DemoIoDevice: IIoDevice
 {
+    private readonly ILogger _logger;
+    private readonly DemoSynchroizer _synchroizer;
+    private readonly SyncManager _syncManager;
     private readonly List<AnalogInput> _analogInputs = [];
+    
     private GpsInput? _gpsInput = null;
     private string _name = string.Empty;
     public string Name{
@@ -39,6 +44,12 @@ public class DemoIoDevice(ILogger logger): IIoDevice
     private bool _sampling = false;
     
     #endregion
+
+    public DemoIoDevice(ILogger logger, SyncManager syncManager){
+        _logger = logger;
+        _syncManager = syncManager;
+        _synchroizer = new DemoSynchroizer(syncManager.Master);
+    }
     
     public bool Configure(IConfigurationSection? configurationSection)
     {
@@ -86,10 +97,12 @@ public class DemoIoDevice(ILogger logger): IIoDevice
     public bool StartSample()
     {
         //Use task for generating data, It may be better to use Thread here
+        _synchroizer.StartAt(_sampleFrequency, _syncManager.Master.Now());
         _sampling = true;
         _sampleTask = Task.Run(
             () =>
             {
+                long counter = 0;
                 while (_sampling)
                 {
                     //Generate sine wave
@@ -99,18 +112,30 @@ public class DemoIoDevice(ILogger logger): IIoDevice
                         raw[i] = (float)Math.Sin(2 * Math.PI * _sineFrequency * (i + _sampleCounter) / _sampleFrequency);
                     }
                     _sampleCounter += _sampleFrequency;
+                    counter += _sampleFrequency;
+
+                    (_synchroizer).Tick(counter, _syncManager.Master.Now());
+                    var rawPacket = new DataPacket<float[]>();
+                    rawPacket.Data = raw;
+                    rawPacket.SyncKey = _synchroizer.Key;
+                    rawPacket.TimeStamp = counter;
                     
                     //Same data for every analog input
                     foreach (var analogInput in _analogInputs)
                     {
-                        // double[] values = new double[_sampleFrequency];
-                        // for(int i=0; i<_sampleFrequency; ++i){
-                        //     values[i] = analogInput.Calibrater.Convert((double)raw[i]);
-                        // }
-                        //analogInput..Add(values);
-                        analogInput.AddRaw(raw);
+                        //analogInput.Add(rawPacket);
+                        double[] values = new double[_sampleFrequency];
+                        for(int i=0; i<_sampleFrequency; ++i){
+                            values[i] = analogInput.Calibrater.Convert((double)raw[i]);
+                        }
+                        var dataPacket = new DataPacket<double[]>(){
+                            Data = values,
+                            SyncKey = _synchroizer.Key,
+                            TimeStamp = counter
+                        };
+                        //analogInput.Add(dataPacket);
                     }
-                    logger.LogInformation($"Demo {_sampleFrequency} generated");
+                    _logger.LogInformation($"Demo {_sampleFrequency} generated");
 
                     //Generate GPS 
                     var Location = new Location(){
@@ -121,7 +146,7 @@ public class DemoIoDevice(ILogger logger): IIoDevice
                     var Speed = 0.0;
                     _gpsInput!.Location.Add(Location);
                     _gpsInput!.Speed.Add(Speed);
-                    logger.LogInformation($"Demo gps generated");
+                    _logger.LogInformation($"Demo gps generated");
 
                     Thread.Sleep(1000);
                 }

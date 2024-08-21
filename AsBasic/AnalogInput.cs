@@ -17,12 +17,4 @@ public class AnalogInput: IIoChannel
         return [];
     }
     
-    public void AddRaw(float[] values){
-        //IoPort.AddRaw();
-        double[] cv = new double[values.Length];
-        for(int i = 0; i < values.Length; i++){
-            cv[i] = Calibrater.Convert(values[i]);
-        }  
-        InputAdapter.Add(cv);
-    }
 }

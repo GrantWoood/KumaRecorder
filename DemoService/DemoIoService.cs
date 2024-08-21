@@ -1,15 +1,24 @@
 using AsAbstract;
+using AsBasic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace DemoService;
 
-public class DemoIoService(ILogger logger): IIoService
+public class DemoIoService: IIoService
 {
-    private readonly DemoIoDevice _device = new DemoIoDevice(logger);
+    private readonly SyncManager SyncManager;
+    private readonly DemoIoDevice _device;
+    private readonly ILogger _logger;
+
+    public DemoIoService(ILogger logger, SyncManager syncManager){
+        _logger = logger;
+        SyncManager = syncManager;
+        _device = new DemoIoDevice(logger, syncManager);
+    }
     public bool Configure(IConfigurationRoot? configurationRoot)
     {
-        logger.LogInformation("Configure demo io service");
+        _logger.LogInformation("Configure demo io service");
         _device.Configure(configurationRoot?.GetSection("device1"));
         return true;
     }
@@ -23,7 +32,7 @@ public class DemoIoService(ILogger logger): IIoService
 
     public bool StartSample()
     {
-        logger.LogInformation("Demo io service is running");
+        _logger.LogInformation("Demo io service is running");
         _device.StartSample();
         return true;
     }
@@ -31,7 +40,7 @@ public class DemoIoService(ILogger logger): IIoService
     public bool StopSample()
     {
         _device.StopSample();
-        logger.LogInformation("Demo io service stopped");
+        _logger.LogInformation("Demo io service stopped");
         return true;
     }
 }
