@@ -56,9 +56,17 @@ public class DemoIoDevice: IIoDevice
         for (int i = 0; i < 4; ++i)
         {
             _analogInputs.Add(new AnalogInput(){
-                Calibrater = new TransducerCalibrater() ,
-                IoPort = new AnalogPort(),
                 IoDevice = this,
+                IoPort = new AnalogPort(),
+                RawAdapter = new DataAdapter(){
+                    FixSampleFrequency = true,
+                    DataType = typeof(float[])
+                },
+                Calibrater = new TransducerCalibrater() ,
+                InputAdapter = new DataAdapter(){
+                    FixSampleFrequency = true,
+                    DataType = typeof(double[]),
+                },
             });
         }
         //2Vibration and 2 Sound for analog inputs
@@ -71,8 +79,12 @@ public class DemoIoDevice: IIoDevice
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitPhysical = "Pa";
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
-            IoPort = new GpsPort(),
             IoDevice = this,
+            IoPort = new GpsPort(),
+            Raw = new DataAdapter(){
+                FixSampleFrequency = false,
+                DataType = typeof(double[])
+            },
         };
         return true;
     }
@@ -115,7 +127,7 @@ public class DemoIoDevice: IIoDevice
                     counter += _sampleFrequency;
 
                     (_synchroizer).Tick(counter, _syncManager.Master.Now());
-                    var rawPacket = new DataPacket<float[]>();
+                    var rawPacket = new FloatArrayDataPacket();
                     rawPacket.Data = raw;
                     rawPacket.SyncKey = _synchroizer.Key;
                     rawPacket.TimeStamp = counter;
@@ -123,29 +135,20 @@ public class DemoIoDevice: IIoDevice
                     //Same data for every analog input
                     foreach (var analogInput in _analogInputs)
                     {
-                        //analogInput.Add(rawPacket);
-                        double[] values = new double[_sampleFrequency];
-                        for(int i=0; i<_sampleFrequency; ++i){
-                            values[i] = analogInput.Calibrater.Convert((double)raw[i]);
-                        }
-                        var dataPacket = new DataPacket<double[]>(){
-                            Data = values,
-                            SyncKey = _synchroizer.Key,
-                            TimeStamp = counter
-                        };
-                        //analogInput.Add(dataPacket);
+                        analogInput.RawAdapter.Receive(rawPacket);
+                        
                     }
                     _logger.LogInformation($"Demo {_sampleFrequency} generated");
 
                     //Generate GPS 
-                    var Location = new Location(){
-                        Latitude = 0,
-                        Longitude = 0,
-                        Altitude = 0,
+                    var gpsvs = new double[4]{
+                        0,  //latitude
+                        0,  //longitude
+                        0,  //altitude
+                        0   //speed
                     };
-                    var Speed = 0.0;
-                    _gpsInput!.Location.Add(Location);
-                    _gpsInput!.Speed.Add(Speed);
+                    var gpsRaw = new DoubleArrayDataPacket();
+                    _gpsInput.Raw.Receive(gpsRaw);
                     _logger.LogInformation($"Demo gps generated");
 
                     Thread.Sleep(1000);

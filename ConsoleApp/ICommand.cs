@@ -67,7 +67,7 @@ public class ListPorts : ICommand{
         StringBuilder builder = new StringBuilder();
         var services = context.Application.IoServices;
         foreach(var service in services){
-            var streams = service.GetInputStreams();
+            var streams = service.GetInputAdapters();
             foreach(var stream in streams){
                 builder.AppendLine(PrintStream(stream));
             }
@@ -77,10 +77,10 @@ public class ListPorts : ICommand{
 
     public string PrintInput(IIoChannel channel){
         StringBuilder stringBuilder= new StringBuilder();
-        var inputStreams = channel.GetInputStreams();
+        var inputStreams = channel.GetInputAdapters();
         stringBuilder.Append(channel.IoDevice.Name);
         stringBuilder.Append("-");
-        stringBuilder.Append(channel.IoPort.Id);
+        stringBuilder.Append(channel.IoPort);
         /* Relative with hardware directly
         Analog: Connection, Range, Mode, Gain, Offset, Sensitivity/Other Calibrater, ...
         Can: Connection, CAN1.0/Can2.0, BitRate, Filters, CanDB...
@@ -116,9 +116,9 @@ public class ListPorts : ICommand{
         return stringBuilder.ToString();
     }
 
-    public string PrintStream(IDataStream stream){
+    public string PrintStream(IDataAdapter stream){
         StringBuilder stringBuilder= new StringBuilder();
-        stringBuilder.Append(stream.ToString());
+        stringBuilder.Append($"{stream.ToString()}, {stream.FixSampleFrequency}, {stream.DataType}");
         return stringBuilder.ToString();
     }
 }
