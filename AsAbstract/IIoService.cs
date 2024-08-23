@@ -5,7 +5,8 @@ namespace AsAbstract;
 public interface IIoService
 {
     bool Configure(IConfigurationRoot? configurationRoot);
-    List<IIoChannel> GetInputChannels();
+    List<IIoDevice> GetIoDevices();
+    List<IIoChannel> GetIoChannels();
     List<IDataAdapter> GetInputAdapters();
     bool StartSample();
     bool StopSample();

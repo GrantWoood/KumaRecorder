@@ -11,8 +11,8 @@ public class GpsInput: IIoChannel
     public DataAdapter Speed = new DataAdapter(){
         DataType = typeof(double),
     };
-    public DataAdapter _raw;
-    public DataAdapter Raw{
+    public DataAdapter? _raw;
+    public DataAdapter? Raw{
         get=> _raw;
         set{
             if(_raw!= null){

@@ -18,10 +18,10 @@ public interface ICommand{
     void Run(AppContext application, ref bool continueRun);
 }
 
-public class Quit:ICommand{
+public class Quit: ICommand{
     public string Key=>"quit";
     public string Description=>"Exit this application.";
-    public Arguments Arguments{get;set;}
+    public Arguments Arguments{get;set;} = new Arguments();
 
     public void Run(AppContext application, ref bool continueRun){
         Console.WriteLine("Exit.")    ;
@@ -32,7 +32,7 @@ public class Quit:ICommand{
 public class ListPorts : ICommand{
     public string Key=>"ls";
     public string Description=>"-p: Show io ports; -t: Show device tree; -s: Show io streams.";
-    public Arguments Arguments{get;set;}
+    public Arguments Arguments{get;set;} = new Arguments();
 
     public void Run(AppContext context, ref bool continueRun){
         StringBuilder stringBuilder= new StringBuilder();
@@ -44,6 +44,9 @@ public class ListPorts : ICommand{
                 case "-s":
                 stringBuilder.AppendLine(GetInputStreamList(context));
                 break;
+                case "-t":
+                stringBuilder.AppendLine(GetIoDeviceTree(context));
+                break;
                 default:
                 break;
             }
@@ -53,9 +56,9 @@ public class ListPorts : ICommand{
 
     public string GetIoPortList(AppContext context){
         StringBuilder builder = new StringBuilder();
-        var services = context.Application.IoServices;
+        var services = context.Application!.IoServices;
         foreach(var service in services){
-            var inputs = service.GetInputChannels();
+            var inputs = service.GetIoChannels();
             foreach(var input in inputs){
                 builder.AppendLine(PrintInput(input));
             }
@@ -65,7 +68,7 @@ public class ListPorts : ICommand{
 
     public string GetInputStreamList(AppContext context){
         StringBuilder builder = new StringBuilder();
-        var services = context.Application.IoServices;
+        var services = context.Application!.IoServices;
         foreach(var service in services){
             var streams = service.GetInputAdapters();
             foreach(var stream in streams){
@@ -119,6 +122,28 @@ public class ListPorts : ICommand{
     public string PrintStream(IDataAdapter stream){
         StringBuilder stringBuilder= new StringBuilder();
         stringBuilder.Append($"{stream.ToString()}, {stream.FixSampleFrequency}, {stream.DataType}");
+        return stringBuilder.ToString();
+    }
+
+    private string GetIoDeviceTree(AppContext context){
+        StringBuilder stringBuilder= new StringBuilder();
+        var services = context.Application!.IoServices;
+        foreach (var service in services){
+            stringBuilder.AppendLine(service.ToString());
+            foreach(var dev in service.GetIoDevices())
+            {
+                stringBuilder.Append(" | --");
+                stringBuilder.AppendLine(dev.ToString());
+                foreach(var input in dev.GetIoChannels()){
+                    stringBuilder.Append("     | --");
+                    stringBuilder.AppendLine(input.ToString());
+                    foreach(var ad in input.GetInputAdapters()){
+                        stringBuilder.Append("          | --");
+                        stringBuilder.AppendLine($"{ad.ToString()}, {ad.DataType}");
+                    }
+                }
+            }
+        }
         return stringBuilder.ToString();
     }
 }

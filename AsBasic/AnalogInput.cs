@@ -7,19 +7,21 @@ public class AnalogInput: IIoChannel
 {
     public required IIoDevice IoDevice { get; set; }
     public required IIoPort IoPort { get; set; }
-    private IDataAdapter _rawAdapter;
-    public required IDataAdapter RawAdapter{get=>_rawAdapter;
-    set{
-        if(_rawAdapter != null){
+    private IDataAdapter? _rawAdapter = null;
+    public required IDataAdapter? RawAdapter{
+        get=>_rawAdapter;
+        set{
+            if(_rawAdapter != null){
+                var action = _rawAdapter.OnReceiveAction();
+                action -= OnReceiveRawPacket;
+            }
+            _rawAdapter = value;
+            if(_rawAdapter != null){
             var action = _rawAdapter.OnReceiveAction();
-            action -= OnReceiveRawPacket;
+            action += OnReceiveRawPacket;
+            }
         }
-        _rawAdapter = value;
-        if(_rawAdapter != null){
-           var action = _rawAdapter.OnReceiveAction();
-           action += OnReceiveRawPacket;
-        }
-    }}
+    }
     public required ICalibrater Calibrater{ get; set; }
     public required IDataAdapter InputAdapter{get;set; }
     

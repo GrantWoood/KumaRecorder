@@ -22,9 +22,11 @@ public class DemoIoService: IIoService
         _device.Configure(configurationRoot?.GetSection("device1"));
         return true;
     }
-
-    public List<IIoChannel> GetInputChannels(){
-        return _device.GetInputChannels();
+    public List<IIoDevice> GetIoDevices(){
+        return [_device];
+    }
+    public List<IIoChannel> GetIoChannels(){
+        return _device.GetIoChannels();
     }
     public List<IDataAdapter> GetInputAdapters(){
         return _device.GetInputAdapters();

@@ -3,7 +3,7 @@ using AsAbstract;
 
 namespace DemoService;
 
-public class DemoSynchroizer(ISynchronize master): ISynchronize{
+public class DemoSynchroizer: ISynchronize{
     public class TickPair{
         public long TimeStamp{get;set;}
         public long TimeStampMaster{get;set;}   

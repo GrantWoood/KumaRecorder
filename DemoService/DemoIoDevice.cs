@@ -48,7 +48,7 @@ public class DemoIoDevice: IIoDevice
     public DemoIoDevice(ILogger logger, SyncManager syncManager){
         _logger = logger;
         _syncManager = syncManager;
-        _synchroizer = new DemoSynchroizer(syncManager.Master);
+        _synchroizer = new DemoSynchroizer();
     }
     
     public bool Configure(IConfigurationSection? configurationSection)
@@ -89,7 +89,7 @@ public class DemoIoDevice: IIoDevice
         return true;
     }
 
-    public List<IIoChannel> GetInputChannels(){
+    public List<IIoChannel> GetIoChannels(){
         List<IIoChannel> channels = [];
         channels.AddRange(_analogInputs);
         if(_gpsInput!=null)
@@ -98,7 +98,7 @@ public class DemoIoDevice: IIoDevice
     }
 
     public List<IDataAdapter> GetInputAdapters(){
-        var channels = GetInputChannels();
+        var channels = GetIoChannels();
         List<IDataAdapter> streams = [];
         foreach(var channel in channels){
             streams.AddRange(channel.GetInputAdapters());
@@ -135,8 +135,7 @@ public class DemoIoDevice: IIoDevice
                     //Same data for every analog input
                     foreach (var analogInput in _analogInputs)
                     {
-                        analogInput.RawAdapter.Receive(rawPacket);
-                        
+                        analogInput!.RawAdapter!.Receive(rawPacket);
                     }
                     _logger.LogInformation($"Demo {_sampleFrequency} generated");
 
@@ -148,7 +147,7 @@ public class DemoIoDevice: IIoDevice
                         0   //speed
                     };
                     var gpsRaw = new DoubleArrayDataPacket();
-                    _gpsInput.Raw.Receive(gpsRaw);
+                    _gpsInput!.Raw!.Receive(gpsRaw);
                     _logger.LogInformation($"Demo gps generated");
 
                     Thread.Sleep(1000);
