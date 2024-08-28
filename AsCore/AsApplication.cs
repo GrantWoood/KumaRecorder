@@ -1,5 +1,5 @@
 using AsAbstract;
-using Microsoft.Extensions.Configuration;
+using AsBasic;
 
 namespace AsCore;
 
@@ -8,8 +8,9 @@ public class AsApplication
     private readonly List<IIoService> _ioServices = [];
     public IIoServiceFactory? IoServiceFactory { get; set; } = null;
     public List<IIoService> IoServices => _ioServices;
+    public ISyncManager? SyncManager{get;set;}
 
-    public bool Configure(IConfigurationRoot? configurationRoot)
+    public bool Configure(IConfiguration? configuration)
     {
         var service = IoServiceFactory!.Create("");
         if (service != null)
@@ -19,6 +20,12 @@ public class AsApplication
         }
         return false;
     }
+
+    public IConfiguration GetConfiguration(){
+        AsConfiguration configuration = new AsConfiguration();
+        return configuration;
+    }
+
     public bool StartSample()
     {
         foreach (var service in _ioServices)

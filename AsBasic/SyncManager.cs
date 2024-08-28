@@ -2,7 +2,7 @@ using AsAbstract;
 
 namespace AsBasic;
 
-public class SyncManager{
+public class SyncManager: ISyncManager{
     private readonly ISynchronize _master;
     public ISynchronize Master=>_master;
 

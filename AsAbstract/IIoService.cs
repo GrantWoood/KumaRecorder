@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Configuration;
-
 namespace AsAbstract;
 
 public interface IIoService
 {
-    bool Configure(IConfigurationRoot? configurationRoot);
+    bool Configure(IConfiguration? configuratio);
     List<IIoDevice> GetIoDevices();
     List<IIoChannel> GetIoChannels();
     List<IDataAdapter> GetInputAdapters();

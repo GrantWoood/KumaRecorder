@@ -1,6 +1,5 @@
 using AsAbstract;
 using AsBasic;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace DemoService;
@@ -16,10 +15,10 @@ public class DemoIoService: IIoService
         SyncManager = syncManager;
         _device = new DemoIoDevice(logger, syncManager);
     }
-    public bool Configure(IConfigurationRoot? configurationRoot)
+    public bool Configure(IConfiguration? configuration)
     {
         _logger.LogInformation("Configure demo io service");
-        _device.Configure(configurationRoot?.GetSection("device1"));
+        _device.Configure(configuration?.GetConfiguration("device1"));
         return true;
     }
     public List<IIoDevice> GetIoDevices(){

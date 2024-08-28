@@ -6,14 +6,15 @@ using AsBasic;
 
 //Create all context, and load default settings
 //Such as IOSevices Available, Analyzers Available, and so on.
-using ILoggerFactory factory = LoggerFactory.Create(
-    builder => builder.AddConsole());
+using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
 ILogger logger = factory.CreateLogger("AsConsole");
-
 SyncManager syncManager= new SyncManager(new SystemSynchronizer());
+var serviceFacotry = new IoServiceFactory(logger, syncManager);
+
 AsApplication application = new AsApplication()
 {
-    IoServiceFactory = new IoServiceFactory(logger, syncManager),
+    IoServiceFactory = serviceFacotry,
+    SyncManager = syncManager,
 };
 
 //Load Settings for this project
@@ -44,6 +45,10 @@ while(continueRun){
         command?.Run(context, ref continueRun);
     }
 }
+
+//Save configuration
+var configuration = application.GetConfiguration();
+
 
 
 // application.StartSample();
