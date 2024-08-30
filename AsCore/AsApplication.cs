@@ -1,5 +1,6 @@
 using AsAbstract;
 using AsBasic;
+using Microsoft.Extensions.Configuration;
 
 namespace AsCore;
 
@@ -19,11 +20,6 @@ public class AsApplication
             _ioServices.Add(service);
         }
         return false;
-    }
-
-    public IConfiguration GetConfiguration(){
-        AsConfiguration configuration = new AsConfiguration();
-        return configuration;
     }
 
     public bool StartSample()

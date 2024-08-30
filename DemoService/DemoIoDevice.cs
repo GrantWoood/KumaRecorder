@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using AsAbstract;
 using AsBasic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace DemoService;
@@ -50,7 +51,7 @@ public class DemoIoDevice: IIoDevice
         _synchroizer = new DemoSynchroizer();
     }
     
-    public bool Configure(IConfiguration? configurationSection)
+    public bool Configure(IConfiguration? configuration)
     {
         for (int i = 0; i < 4; ++i)
         {

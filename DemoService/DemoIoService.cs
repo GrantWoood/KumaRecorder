@@ -1,7 +1,7 @@
 using AsAbstract;
 using AsBasic;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Configuration;
 namespace DemoService;
 
 public class DemoIoService: IIoService
@@ -18,7 +18,7 @@ public class DemoIoService: IIoService
     public bool Configure(IConfiguration? configuration)
     {
         _logger.LogInformation("Configure demo io service");
-        _device.Configure(configuration?.GetConfiguration("device1"));
+        _device.Configure(null);
         return true;
     }
     public List<IIoDevice> GetIoDevices(){

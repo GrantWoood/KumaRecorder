@@ -3,13 +3,27 @@ using ConsoleApp;
 using DemoService;
 using Microsoft.Extensions.Logging;
 using AsBasic;
+using Microsoft.Extensions.Configuration;
 
 //Create all context, and load default settings
 //Such as IOSevices Available, Analyzers Available, and so on.
 using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
 ILogger logger = factory.CreateLogger("AsConsole");
+
+var servicesConfiguration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("ioservices.json", optional:true, reloadOnChange:false).Build();
+
+
+var appConfiguration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional:true, reloadOnChange:false).Build();
+
 SyncManager syncManager= new SyncManager(new SystemSynchronizer());
 var serviceFacotry = new IoServiceFactory(logger, syncManager);
+serviceFacotry.Configure(servicesConfiguration);
+
+
 
 AsApplication application = new AsApplication()
 {
@@ -19,7 +33,7 @@ AsApplication application = new AsApplication()
 
 //Load Settings for this project
 //Such as IOSevices used, Channel Settings, Analyzer and it's parameters, and so on.
-application.Configure(null);
+application.Configure(appConfiguration);
 
 //Initialize Command System for Console
 CommandManager commandManager = new CommandManager();
@@ -47,8 +61,6 @@ while(continueRun){
 }
 
 //Save configuration
-var configuration = application.GetConfiguration();
-
 
 
 // application.StartSample();
