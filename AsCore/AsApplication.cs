@@ -11,6 +11,9 @@ public class AsApplication
     public List<IIoService> IoServices => _ioServices;
     public ISyncManager? SyncManager{get;set;}
 
+    /**
+    加载默认配置
+    */
     public bool Configure(IConfiguration? configuration)
     {
         var service = IoServiceFactory!.Create("");
@@ -22,6 +25,9 @@ public class AsApplication
         return false;
     }
 
+    /**
+    开始采集数据
+    */
     public bool StartSample()
     {
         foreach (var service in _ioServices)
@@ -30,7 +36,9 @@ public class AsApplication
         }
         return false;
     }
-
+    /**
+    停止采集数据
+    */
     public bool StopSample()
     {
         foreach (var service in _ioServices)
@@ -38,5 +46,12 @@ public class AsApplication
             service.StopSample();
         }
         return false;
+    }
+
+    /**
+    加载配置信息，如设备设置、通道设置，分析模式等
+    */
+    public bool LoadProfile(){
+        return true;
     }
 }

@@ -24,16 +24,17 @@ var serviceFacotry = new IoServiceFactory(logger, syncManager);
 serviceFacotry.Configure(servicesConfiguration);
 
 
-
 AsApplication application = new AsApplication()
 {
     IoServiceFactory = serviceFacotry,
     SyncManager = syncManager,
 };
 
+application.Configure(appConfiguration);
+
 //Load Settings for this project
 //Such as IOSevices used, Channel Settings, Analyzer and it's parameters, and so on.
-application.Configure(appConfiguration);
+application.LoadProfile();
 
 //Initialize Command System for Console
 CommandManager commandManager = new CommandManager();
