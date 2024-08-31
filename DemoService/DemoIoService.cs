@@ -30,8 +30,11 @@ public class DemoIoService: IIoService
         return true;
     }
 
-    public bool LoadProfile(IConfiguration? configuration){
+    public bool LoadProfile(ITestProfile? configuration){
         return false;
+    }
+    public bool SaveProfile(ITestProfile configuration){
+        return true;
     }
 
     public List<IIoDevice> GetIoDevices(){

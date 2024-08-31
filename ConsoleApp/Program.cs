@@ -39,7 +39,7 @@ var appProfile = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("defaultProfile.json", optional:true, reloadOnChange:false).Build();
 
-application.LoadProfile(appProfile);
+application.LoadProfile(null);
 
 //Initialize Command System for Console
 CommandManager commandManager = new CommandManager();

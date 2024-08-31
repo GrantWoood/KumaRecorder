@@ -13,7 +13,7 @@ public class AsApplication
     public ISyncManager? SyncManager{get;set;}
     public required ILogger Logger{ get; set; }
     private IConfiguration? _configuration;
-    private IConfiguration? _profile;
+    private ITestProfile? _profile;
 
     /**
     加载默认配置
@@ -51,14 +51,14 @@ public class AsApplication
     /**
     加载配置信息，如设备设置、通道设置，分析模式等
     */
-    public bool LoadProfile(IConfiguration? profile){
+    public bool LoadProfile(ITestProfile? profile){
 
         var servicesProfile = profile?.GetSection("IoServices");
-        if (servicesProfile.Exists())
+        if (servicesProfile!= null)
         {
             foreach (var sp in servicesProfile.GetChildren())
             {
-                var sId = sp["Id"];
+                var sId = sp.GetSection("id").GetValue() as String;
                 if(sId != null)
                 {
                     var service = IoServiceFactory!.Create(sId);
@@ -92,5 +92,11 @@ public class AsApplication
         }
         return true;
     }
+
+    public bool SaveProfile(ITestProfile configuration){
+        
+        return true;
+    }
+
 
 }
