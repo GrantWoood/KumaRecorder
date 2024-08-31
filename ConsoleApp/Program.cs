@@ -28,13 +28,18 @@ AsApplication application = new AsApplication()
 {
     IoServiceFactory = serviceFacotry,
     SyncManager = syncManager,
+    Logger = logger,
 };
 
 application.Configure(appConfiguration);
 
 //Load Settings for this project
 //Such as IOSevices used, Channel Settings, Analyzer and it's parameters, and so on.
-application.LoadProfile();
+var appProfile = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("defaultProfile.json", optional:true, reloadOnChange:false).Build();
+
+application.LoadProfile(appProfile);
 
 //Initialize Command System for Console
 CommandManager commandManager = new CommandManager();

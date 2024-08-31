@@ -52,39 +52,44 @@ public class AsApplication
     加载配置信息，如设备设置、通道设置，分析模式等
     */
     public bool LoadProfile(IConfiguration? profile){
-        if(profile == null){
-            //Load Demo
-            Logger.LogInformation("Profile isn't provided, use default profile!");
-            var service = IoServiceFactory!.Create("");
-            if (service != null)
+
+        var servicesProfile = profile?.GetSection("IoServices");
+        if (servicesProfile.Exists())
+        {
+            foreach (var sp in servicesProfile.GetChildren())
             {
-                service.Configure(null);
-                _ioServices.Add(service);
+                var sId = sp["Id"];
+                if(sId != null)
+                {
+                    var service = IoServiceFactory!.Create(sId);
+                    if (service == null)
+                    {
+                        Logger.LogError($"Profile is provided, but io service create failed for {sId}");
+                        //Service created failed
+                    }
+                    else if (!service.LoadProfile(sp))
+                    {
+                        Logger.LogError($"Load profile failed for io service {service.Name}!");
+                    }
+                    else
+                    {
+                        Logger.LogInformation($"Profile load success for {service.Name}!");
+                    }
+                }
+                else{
+                    Logger.LogError($"Service id is not specified for io service");
+                }
             }
         }
         else
         {
-            var servicesProfile = profile.GetSection("IoServices");
-            foreach (var sp in servicesProfile.GetChildren())
+            Logger.LogInformation("Profile isn't provided, use default profile!");
+            var service = IoServiceFactory!.Create("");
+            if (service != null)
             {
-                var sId = sp["Id"];
-                var service = IoServiceFactory!.Create(sId);
-                if (service == null)
-                {
-                    Logger.LogError($"Profile is provided, but io service create failed for {sId}");
-                    //Service created failed
-                }
-                else if (!service.LoadProfile(sp))
-                {
-                    Logger.LogError($"Load profile failed for io service {service.Name}!");
-                }
-                else
-                {
-                    Logger.LogInformation($"Profile load success for {service.Name}!");
-                }
+                _ioServices.Add(service);
             }
         }
-
         return true;
     }
 
