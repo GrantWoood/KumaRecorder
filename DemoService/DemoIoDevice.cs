@@ -45,6 +45,7 @@ public class DemoIoDevice: IIoDevice
     
     #endregion
 
+
     public DemoIoDevice(ILogger logger, SyncManager syncManager){
         _logger = logger;
         _syncManager = syncManager;
