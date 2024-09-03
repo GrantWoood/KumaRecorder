@@ -13,7 +13,6 @@ public class AsApplication
     public ISyncManager? SyncManager{get;set;}
     public required ILogger Logger{ get; set; }
     private IConfiguration? _configuration;
-    private ITestProfile? _profile;
 
     /**
     加载默认配置
@@ -51,50 +50,58 @@ public class AsApplication
     /**
     加载配置信息，如设备设置、通道设置，分析模式等
     */
-    public bool LoadProfile(ITestProfile? profile){
-
-        var servicesProfile = profile?.GetSection("IoServices");
-        if (servicesProfile!= null)
+    public bool LoadProfile(IBundle? profile){
+        if (profile != null)
         {
-            foreach (var sp in servicesProfile.GetChildren())
+            var servicesProfile = profile.GetBundleList("IoServices");
+            if (servicesProfile != null)
             {
-                var sId = sp.GetSection("id").GetValue() as String;
-                if(sId != null)
+                foreach (var sp in servicesProfile)
                 {
-                    var service = IoServiceFactory!.Create(sId);
-                    if (service == null)
+                    var id = sp.GetString("id");
+                    if (id != null)
                     {
-                        Logger.LogError($"Profile is provided, but io service create failed for {sId}");
-                        //Service created failed
-                    }
-                    else if (!service.LoadProfile(sp))
-                    {
-                        Logger.LogError($"Load profile failed for io service {service.Name}!");
+                        var service = IoServiceFactory!.Create(id);
+                        if (service == null)
+                        {
+                            Logger.LogError($"Profile is provided, but io service create failed for {id}");
+                        }
+                        else if (!service.LoadProfile(sp))
+                        {
+                            Logger.LogError($"Load profile failed for io service {service.Name}!");
+                        }
+                        else
+                        {
+                            Logger.LogInformation($"Profile load success for {service.Name}!");
+                            _ioServices.Add(service);
+                        }
                     }
                     else
                     {
-                        Logger.LogInformation($"Profile load success for {service.Name}!");
+                        Logger.LogError($"Service id is not specified for io service");
                     }
                 }
-                else{
-                    Logger.LogError($"Service id is not specified for io service");
-                }
             }
-        }
-        else
-        {
-            Logger.LogInformation("Profile isn't provided, use default profile!");
-            var service = IoServiceFactory!.Create("");
-            if (service != null)
-            {
-                _ioServices.Add(service);
+            if(_ioServices.Count == 0){
+                Logger.LogInformation("No io service loaded, use default profile!");
+                var service = IoServiceFactory!.Create("");
+                if (service != null)
+                {
+                    _ioServices.Add(service);
+                }
             }
         }
         return true;
     }
 
-    public bool SaveProfile(ITestProfile configuration){
-        
+    public bool SaveProfile(IBundle configuration){
+        List<IBundle> servicesProfile = [];
+        foreach(var service in _ioServices){
+            IBundle sp = configuration.CreateBundle();
+            service.SaveProfile(sp);
+            servicesProfile.Add(sp);
+        }
+        configuration.PutBundleList("IoServices", servicesProfile);
         return true;
     }
 

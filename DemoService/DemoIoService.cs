@@ -24,16 +24,32 @@ public class DemoIoService: IIoService
         _device = new DemoIoDevice(logger, syncManager);
     }
     public bool Configure(IConfiguration? configuration)
-    {
+    { 
         _logger.LogInformation("Configure demo io service");
         _device.Configure(null);
         return true;
     }
 
-    public bool LoadProfile(ITestProfile? configuration){
-        return false;
+    public bool LoadProfile(IBundle? configuration){
+        if(configuration!=null){
+            var id = configuration.GetString("id");
+            if(id != Id){
+                throw new ArgumentException("Id is not correct in DemoIoService while loading profile");
+            }
+            var name = configuration.GetString("Name");
+            if(name != null){
+                Name = name;
+            }
+            _device.LoadProfile(configuration.GetBundle("device"));
+        }
+        return true;
     }
-    public bool SaveProfile(ITestProfile configuration){
+    public bool SaveProfile(IBundle configuration){
+        configuration.PutString("id", Id);
+        configuration.PutString("name", Name);
+        var bundle = configuration.CreateBundle();
+        _device.SaveProfile(bundle);
+        configuration.PutBundle("device", bundle);
         return true;
     }
 

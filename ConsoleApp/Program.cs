@@ -4,6 +4,7 @@ using DemoService;
 using Microsoft.Extensions.Logging;
 using AsBasic;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 //Create all context, and load default settings
 //Such as IOSevices Available, Analyzers Available, and so on.
@@ -35,11 +36,16 @@ application.Configure(appConfiguration);
 
 //Load Settings for this project
 //Such as IOSevices used, Channel Settings, Analyzer and it's parameters, and so on.
-var appProfile = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("defaultProfile.json", optional:true, reloadOnChange:false).Build();
+var profileFile = Path.Join(Directory.GetCurrentDirectory(), "profile.json");
+if(Path.Exists(profileFile)){
+    var dictProfile = JsonSerializer.Deserialize<DictionaryBundle>(File.ReadAllText(profileFile));
+    application.LoadProfile(dictProfile);
+}
+else{
+    application.LoadProfile(null);
+}
 
-application.LoadProfile(null);
+
 
 //Initialize Command System for Console
 CommandManager commandManager = new CommandManager();
@@ -67,6 +73,13 @@ while(continueRun){
 }
 
 //Save configuration
+using(var fs = new FileStream(profileFile, FileMode.OpenOrCreate)){
+    DictionaryBundle bundle = new DictionaryBundle();
+    context.Application.SaveProfile(bundle);
+    JsonSerializer.Serialize<DictionaryBundle>(fs, bundle, new JsonSerializerOptions{
+        WriteIndented = true,
+    });
+}
 
 
 // application.StartSample();

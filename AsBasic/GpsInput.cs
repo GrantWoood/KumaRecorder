@@ -41,4 +41,11 @@ public class GpsInput: IIoChannel
     private void OnReceiveRawPacket(IDataPacket packet){
 
     }
+
+    public bool LoadProfile(IBundle? configuration){
+        return true;
+    }
+    public bool SaveProfile(IBundle configuration){
+        return true;
+    }
 }

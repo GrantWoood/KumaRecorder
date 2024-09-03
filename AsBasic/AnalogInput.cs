@@ -49,5 +49,10 @@ public class AnalogInput: IIoChannel
     public List<IDataAdapter> GetOutputAdapters(){
         return [];
     }
-    
+    public bool LoadProfile(IBundle? configuration){
+        return true;
+    }
+    public bool SaveProfile(IBundle configuration){
+        return true;
+    }
 }

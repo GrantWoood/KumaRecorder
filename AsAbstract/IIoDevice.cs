@@ -10,4 +10,6 @@ public interface IIoDevice
     List<IDataAdapter> GetInputAdapters();
     bool StartSample();
     bool StopSample();
+    bool LoadProfile(IBundle? configuration);
+    bool SaveProfile(IBundle configuration);
 }

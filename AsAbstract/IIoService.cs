@@ -7,8 +7,8 @@ public interface IIoService
     string Name{get;}
     string Id{get;}
     bool Configure(IConfiguration? configuration);
-    bool LoadProfile(ITestProfile? configuration);
-    bool SaveProfile(ITestProfile configuration);
+    bool LoadProfile(IBundle? configuration);
+    bool SaveProfile(IBundle configuration);
     List<IIoDevice> GetIoDevices();
     List<IIoChannel> GetIoChannels();
     List<IDataAdapter> GetInputAdapters();

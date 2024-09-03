@@ -164,4 +164,48 @@ public class DemoIoDevice: IIoDevice
         _sampleTask = null;
         return false;
     }
+
+    public bool LoadProfile(IBundle? configuration)
+    {
+        if (configuration != null)
+        {
+            var name = configuration.GetString("name");
+            if (name != null)
+            {
+                _name = name;
+            }
+            var analogsProfile = configuration.GetBundleList("analogs");
+            if(analogsProfile != null && 
+                analogsProfile.Count == _analogInputs.Count){
+                for(int i=0; i<analogsProfile.Count;++i){
+                    _analogInputs[i].LoadProfile(analogsProfile[i]);
+                }
+            }
+            var gpsProfiles = configuration.GetBundleList("gpses");
+            if(gpsProfiles != null && _gpsInput!=null && 
+                gpsProfiles.Count == 1){
+                _gpsInput.LoadProfile(gpsProfiles[0]);
+            }
+        }
+        return true;
+    }
+    public bool SaveProfile(IBundle configuration){
+        configuration.PutString("name", _name);
+        List<IBundle> analogBundles = [];
+        foreach (var analogInput in _analogInputs){
+            var analogBundle = configuration.CreateBundle();
+            analogInput.SaveProfile(analogBundle);;
+            analogBundles.Add(analogBundle);
+        }
+        configuration.PutBundleList("analogs", analogBundles);
+        List<IBundle> gpsBundles = [];
+        if(_gpsInput!= null){
+            var gpsBundle = configuration.CreateBundle();
+            _gpsInput.SaveProfile(gpsBundle);
+            gpsBundles.Add(gpsBundle);
+        }
+        configuration.PutBundleList("gpses", gpsBundles);
+
+        return true;
+    }
 }
