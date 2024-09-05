@@ -25,11 +25,10 @@ var serviceFacotry = new IoServiceFactory(logger, syncManager);
 serviceFacotry.Configure(servicesConfiguration);
 
 
-AsApplication application = new AsApplication()
+AsApplication application = new AsApplication(logger)
 {
     IoServiceFactory = serviceFacotry,
-    SyncManager = syncManager,
-    Logger = logger,
+    SyncManager = syncManager
 };
 
 application.Configure(appConfiguration);
@@ -44,6 +43,7 @@ if(Path.Exists(profileFile)){
 else{
     application.LoadProfile(null);
 }
+
 
 
 

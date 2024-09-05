@@ -1,0 +1,5 @@
+namespace AsStorage;
+
+class AsFile{
+    
+}

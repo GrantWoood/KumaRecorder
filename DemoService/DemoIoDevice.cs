@@ -12,6 +12,7 @@ public class DemoIoDevice: IIoDevice
     private readonly DemoSynchroizer _synchroizer;
     private readonly SyncManager _syncManager;
     private readonly List<AnalogInput> _analogInputs = [];
+    private readonly DemoIoService _demoService;
     
     private GpsInput? _gpsInput = null;
     private string _name = string.Empty;
@@ -25,6 +26,11 @@ public class DemoIoDevice: IIoDevice
         }
         set { _name = value; }
     }
+
+    public string Id{get;set;}
+    public string FullId{get{
+        return $"{_demoService.FullId}.{Id}";
+    }}
 
     public string Manufacture => "As";
     public string Model => "Demo";
@@ -46,7 +52,9 @@ public class DemoIoDevice: IIoDevice
     #endregion
 
 
-    public DemoIoDevice(ILogger logger, SyncManager syncManager){
+    public DemoIoDevice(DemoIoService parent, 
+        ILogger logger, SyncManager syncManager){
+        _demoService = parent;
         _logger = logger;
         _syncManager = syncManager;
         _synchroizer = new DemoSynchroizer();
@@ -56,17 +64,22 @@ public class DemoIoDevice: IIoDevice
     {
         for (int i = 0; i < 4; ++i)
         {
-            _analogInputs.Add(new AnalogInput(){
+            _analogInputs.Add(new AnalogInput()
+            {
                 IoDevice = this,
                 IoPort = new AnalogPort(),
-                RawAdapter = new DataAdapter(){
+                Id = $"Analog{i+1}",
+                RawAdapter = new DataAdapter()
+                {
                     FixSampleFrequency = true,
                     DataType = typeof(float[])
                 },
-                Calibrater = new TransducerCalibrater() ,
-                InputAdapter = new DataAdapter(){
+                Calibrater = new TransducerCalibrater(),
+                InputAdapter = new DataAdapter()
+                {
                     FixSampleFrequency = true,
                     DataType = typeof(double[]),
+                    TypeName = "Analog"
                 },
             });
         }
@@ -81,6 +94,7 @@ public class DemoIoDevice: IIoDevice
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
             IoDevice = this,
+            Id = $"Gps{1}",
             IoPort = new GpsPort(),
             Raw = new DataAdapter(){
                 FixSampleFrequency = false,

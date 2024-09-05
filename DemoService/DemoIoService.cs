@@ -9,19 +9,19 @@ public class DemoIoService: IIoService
 {
     static public string Guid = "04C79BB3-6966-4BC9-9EA3-B20127A5F241";
     public string Name{get;set;} = "Demo Io Service";
-    public string Id{
-        get{
-            return Guid;
-        }
-    }
+    public string Id{get;set;} = String.Empty;
     private readonly SyncManager SyncManager;
     private readonly DemoIoDevice _device;
     private readonly ILogger _logger;
 
+    public string FullId{get{
+        return $"{Id}";
+    }}
+
     public DemoIoService(ILogger logger, SyncManager syncManager){
         _logger = logger;
         SyncManager = syncManager;
-        _device = new DemoIoDevice(logger, syncManager);
+        _device = new DemoIoDevice(this, logger, syncManager);
     }
     public bool Configure(IConfiguration? configuration)
     { 
@@ -32,9 +32,9 @@ public class DemoIoService: IIoService
 
     public bool LoadProfile(IBundle? configuration){
         if(configuration!=null){
-            var id = configuration.GetString("id");
-            if(id != Id){
-                throw new ArgumentException("Id is not correct in DemoIoService while loading profile");
+            var guid = configuration.GetString("guid");
+            if(guid != Guid){
+                throw new ArgumentException("Guid is not correct in DemoIoService while loading profile");
             }
             var name = configuration.GetString("Name");
             if(name != null){
@@ -45,7 +45,7 @@ public class DemoIoService: IIoService
         return true;
     }
     public bool SaveProfile(IBundle configuration){
-        configuration.PutString("id", Id);
+        configuration.PutString("guid", Guid);
         configuration.PutString("name", Name);
         var bundle = configuration.CreateBundle();
         _device.SaveProfile(bundle);

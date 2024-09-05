@@ -5,7 +5,7 @@ namespace AsAbstract;
 public interface IIoService
 {
     string Name{get;}
-    string Id{get;}
+    string Id{get;set;}
     bool Configure(IConfiguration? configuration);
     bool LoadProfile(IBundle? configuration);
     bool SaveProfile(IBundle configuration);

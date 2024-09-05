@@ -7,9 +7,11 @@ public class GpsInput: IIoChannel
 {
     public DataAdapter Location = new DataAdapter(){
         DataType = typeof(Location),
+        TypeName = "Location",
     };
     public DataAdapter Speed = new DataAdapter(){
         DataType = typeof(double),
+        TypeName = "Speed",
     };
     public DataAdapter? _raw;
     public DataAdapter? Raw{
@@ -30,6 +32,10 @@ public class GpsInput: IIoChannel
     public required IIoPort IoPort { get; set; }
     public required IIoDevice IoDevice { get; set; }
     public string Name{get;set;} = string.Empty;
+    public string Id{get;set;} = string.Empty;
+    public string FullId{get{
+        return $"{IoDevice.FullId}.{Id}";
+    }}
     public List<IDataAdapter> GetInputAdapters(){
         return [Location, Speed];
     }

@@ -27,6 +27,11 @@ public class AnalogInput: IIoChannel
     
     public string Name{get;set;} = string.Empty;
 
+    public string Id{get;set;} = string.Empty;
+    public string FullId{get{
+        return $"{IoDevice.FullId}.{Id}";
+    }}
+
     void OnReceiveRawPacket(IDataPacket packet){
         //根据格式转换为需要的格式
         double[] values = packet.AsDoubleArray();
