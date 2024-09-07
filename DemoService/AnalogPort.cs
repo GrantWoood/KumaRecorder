@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using AsAbstract;
 
 namespace DemoService;
@@ -16,9 +17,18 @@ public class AnalogPort: IIoPort
         IEPE,
     }
 
+    public enum SignalMode{
+        Single,
+        Differential,
+    }
+    [DisplayName("Range")]
     public RangeLevel Range { get; set;}
-    public InputMode Mode { get; set;}
-
+    [DisplayName("Input")]
+    public InputMode Input { get; set;}
+    [DisplayName("Couple")]
+    public SignalMode Couple{get;set;}
+    [DisplayName("Gain")]
     public double Gain{get; set;}
+    [DisplayName("Offset")]
     public double Offset{get; set;} 
 }

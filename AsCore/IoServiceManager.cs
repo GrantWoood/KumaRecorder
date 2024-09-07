@@ -29,8 +29,7 @@ public class IoServiceManager(ILogger logger){
     }
 
     public bool LoadProfile(IBundle? profile, IIoServiceFactory ioServiceFactory){
-        var servicesProfile = profile!.GetBundleList("IoServices");
-
+        var servicesProfile = profile?.GetBundleList("IoServices");
         if (servicesProfile != null)
         {
             foreach (var sp in servicesProfile)
@@ -59,10 +58,13 @@ public class IoServiceManager(ILogger logger){
                 }
                 
             }
-            OnIoServiceLoaded();
-            return true;
         }
-        return false;
+        if(IoServices.Count == 0){
+            logger.LogWarning("Load profile failed, no io service created. Create default io service by default!");
+            LoadDefault(ioServiceFactory);
+        }
+        OnIoServiceLoaded();
+        return true;
     }
 
     public void LoadDefault(IIoServiceFactory factory){
@@ -91,5 +93,18 @@ public class IoServiceManager(ILogger logger){
         for(int i=0; i<IoServices.Count; ++i){
             IoServices[i].Id = $"{i+1}";
         }
+    }
+
+    public List<IIoChannel> GetIoChannels(string channelType){
+        List<IIoChannel> channels= [];
+        foreach(var service in _ioServices){
+            var chs = service.GetIoChannels();
+            foreach(var ch in chs){
+                if(ch.TypeName == channelType){
+                    channels.Add(ch);
+                }
+            }
+        }
+        return channels;
     }
 }

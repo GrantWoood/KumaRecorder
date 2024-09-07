@@ -48,29 +48,25 @@ else{
 
 
 //Initialize Command System for Console
-CommandManager commandManager = new CommandManager();
-CommandParser commandParser = new CommandParser(commandManager);
-
 AppContext context = new AppContext(){
     Application = application,
-    commandManager = commandManager,
+    Running = true
 };
 
 Console.WriteLine("Welcome to KumaRecorder.");
 Console.WriteLine("");
-bool continueRun = true;
-while(continueRun){
+
+var app = new CliAppBuilder().Builder(context);
+while(context.Running){
     var cmd = Console.ReadLine();
     if(cmd == null){
         continue;
     }
-    ICommand? command = commandParser.Parse(cmd);
-    if(command == null){
-        Console.WriteLine("Invalid command");
-    }else{
-        command?.Run(context, ref continueRun);
-    }
+    var cmds = cmd.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    app.Run(cmds);
 }
+
+Console.WriteLine("Application Exit.");
 
 //Save configuration
 using(var fs = new FileStream(profileFile, FileMode.OpenOrCreate)){
@@ -80,15 +76,3 @@ using(var fs = new FileStream(profileFile, FileMode.OpenOrCreate)){
         WriteIndented = true,
     });
 }
-
-
-// application.StartSample();
-// var counter = 10;
-// while (counter > 0)
-// {
-//     Console.WriteLine($"Sample running {counter}...");
-//     Thread.Sleep(1000);
-//     --counter;
-// }
-// application.StopSample();
-// Console.WriteLine("Exit.");

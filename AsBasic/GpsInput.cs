@@ -36,6 +36,8 @@ public class GpsInput: IIoChannel
     public string FullId{get{
         return $"{IoDevice.FullId}.{Id}";
     }}
+    public string TypeName=>"Gps";
+    public bool Enabled{get;set;} = true;
     public List<IDataAdapter> GetInputAdapters(){
         return [Location, Speed];
     }

@@ -69,6 +69,7 @@ public class DemoIoDevice: IIoDevice
                 IoDevice = this,
                 IoPort = new AnalogPort(),
                 Id = $"Analog{i+1}",
+                Name = $"Analog{i+1}",
                 RawAdapter = new DataAdapter()
                 {
                     FixSampleFrequency = true,
@@ -79,7 +80,8 @@ public class DemoIoDevice: IIoDevice
                 {
                     FixSampleFrequency = true,
                     DataType = typeof(double[]),
-                    TypeName = "Analog"
+                    TypeName = "Analog",
+                    
                 },
             });
         }
@@ -95,6 +97,7 @@ public class DemoIoDevice: IIoDevice
         _gpsInput =  new GpsInput(){
             IoDevice = this,
             Id = $"Gps{1}",
+            Name=$"Gps{1}",
             IoPort = new GpsPort(),
             Raw = new DataAdapter(){
                 FixSampleFrequency = false,

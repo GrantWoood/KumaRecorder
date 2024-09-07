@@ -12,7 +12,7 @@ public class AsApplication
     public ISyncManager? SyncManager{get;set;}
     public ILogger Logger{ get; set; }
     private IConfiguration? _configuration;
-    public IoServiceManager serviceManager=>_serviceManager;
+    public IoServiceManager IoServiceManager=>_serviceManager;
     public List<IIoService> IoServices => _serviceManager.IoServices;
     public readonly StreamManager StreamManager = new StreamManager();
 
@@ -50,17 +50,15 @@ public class AsApplication
     /**
     加载配置信息，如设备设置、通道设置，分析模式等
     */
-    public bool LoadProfile(IBundle? profile){
-        if (profile != null)
+    public bool LoadProfile(IBundle? profile)
+    {
+        _serviceManager.LoadProfile(profile, IoServiceFactory!);
+
+        if (IoServices.Count == 0)
         {
-            _serviceManager.LoadProfile(profile, IoServiceFactory!);
-
-            if(IoServices.Count == 0){
-                Logger.LogInformation("No io service loaded, use default profile!");
-                _serviceManager.LoadDefault(IoServiceFactory!);
-            }
+            Logger.LogInformation("No io service loaded, use default profile!");
+            _serviceManager.LoadDefault(IoServiceFactory!);
         }
-
         StreamManager.OnIoServicesUpdated(this);
         return true;
     }

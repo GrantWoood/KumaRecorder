@@ -7,7 +7,7 @@ public class DataAdapter: IDataAdapter{
     public string Name{
         get{
             if(CustomName.Length == 0){
-                return $"{TypeName} N";
+                return $"{TypeName}";
             }else{
                 return CustomName;
             }
