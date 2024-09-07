@@ -107,4 +107,14 @@ public class IoServiceManager(ILogger logger){
         }
         return channels;
     }
+
+    public IIoChannel? GetIoChannel(string channelType, string channelID){
+        var channels = GetIoChannels(channelType);
+        foreach(var channel  in channels ){
+            if(channel.FullId == channelID){
+                return channel;
+            }
+        }
+        return null;
+    }
 }

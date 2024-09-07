@@ -21,7 +21,9 @@ public class DemoIoService: IIoService
     public DemoIoService(ILogger logger, SyncManager syncManager){
         _logger = logger;
         SyncManager = syncManager;
-        _device = new DemoIoDevice(this, logger, syncManager);
+        _device = new DemoIoDevice(this, logger, syncManager){
+            Id = "1"
+        };
     }
     public bool Configure(IConfiguration? configuration)
     { 

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using AsAbstract;
 namespace AsBasic;
 
-public class AnalogInput: IIoChannel
+public abstract class AnalogInput: IIoChannel
 {
     public required IIoDevice IoDevice { get; set; }
     public required IIoPort IoPort { get; set; }
@@ -29,7 +29,7 @@ public class AnalogInput: IIoChannel
     public string FullId{get{
         return $"{IoDevice.FullId}.{Id}";
     }}
-    public string TypeName=>"AnalogInput";
+    public string TypeName=>IoChannelType.Analog;
     public bool Enabled{get;set;} = true;
     void OnReceiveRawPacket(IDataPacket packet){
         //根据格式转换为需要的格式
@@ -59,4 +59,5 @@ public class AnalogInput: IIoChannel
     public bool SaveProfile(IBundle configuration){
         return true;
     }
+    public abstract ISettings GetSettings();
 }

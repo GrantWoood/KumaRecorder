@@ -10,6 +10,10 @@ class CliAppBuilder{
                     ls.AddCommand<ListInputListCommand>("inputs").WithData(context1);;
                     ls.AddCommand<ListIoStreamTreeCommand>("streams").WithData(context1);;
                 });
+            config.AddBranch<CliSetCommandSettings>("set",
+                set=>{
+                    set.AddCommand<CliSetAnalogCommand>("analog").WithData(context1);
+                });
         });
         
         return app;

@@ -7,11 +7,11 @@ public class GpsInput: IIoChannel
 {
     public DataAdapter Location = new DataAdapter(){
         DataType = typeof(Location),
-        TypeName = "Location",
+        TypeName = DataAdapterType.Location,
     };
     public DataAdapter Speed = new DataAdapter(){
         DataType = typeof(double),
-        TypeName = "Speed",
+        TypeName = DataAdapterType.Speed,
     };
     public DataAdapter? _raw;
     public DataAdapter? Raw{
@@ -36,7 +36,7 @@ public class GpsInput: IIoChannel
     public string FullId{get{
         return $"{IoDevice.FullId}.{Id}";
     }}
-    public string TypeName=>"Gps";
+    public string TypeName=>IoChannelType.Gps;
     public bool Enabled{get;set;} = true;
     public List<IDataAdapter> GetInputAdapters(){
         return [Location, Speed];
@@ -55,5 +55,10 @@ public class GpsInput: IIoChannel
     }
     public bool SaveProfile(IBundle configuration){
         return true;
+    }
+
+    public ISettings GetSettings()
+    {
+        throw new NotImplementedException();
     }
 }

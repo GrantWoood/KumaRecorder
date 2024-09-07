@@ -14,4 +14,6 @@ public interface IIoChannel
     public List<IDataAdapter> GetOutputAdapters();
     bool LoadProfile(IBundle? configuration);
     bool SaveProfile(IBundle configuration);
+    ISettings GetSettings();
+
 }

@@ -21,14 +21,14 @@ public class AnalogPort: IIoPort
         Single,
         Differential,
     }
-    [DisplayName("Range")]
-    public RangeLevel Range { get; set;}
-    [DisplayName("Input")]
-    public InputMode Input { get; set;}
-    [DisplayName("Couple")]
-    public SignalMode Couple{get;set;}
-    [DisplayName("Gain")]
-    public double Gain{get; set;}
-    [DisplayName("Offset")]
-    public double Offset{get; set;} 
+
+    public RangeLevel Range { get; set;} = RangeLevel.R1V;
+
+    public InputMode Input { get; set;} = InputMode.Direct;
+
+    public SignalMode Couple{get;set;} = SignalMode.Single;
+
+    public double Gain{get; set;} = 1.0;
+
+    public double Offset{get; set;}  = 0.0;
 }

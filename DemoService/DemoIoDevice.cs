@@ -64,12 +64,12 @@ public class DemoIoDevice: IIoDevice
     {
         for (int i = 0; i < 4; ++i)
         {
-            _analogInputs.Add(new AnalogInput()
+            _analogInputs.Add(new DemoAnalogChannel()
             {
                 IoDevice = this,
                 IoPort = new AnalogPort(),
-                Id = $"Analog{i+1}",
-                Name = $"Analog{i+1}",
+                Id = $"{IoChannelType.AnalogShort}{i+1}",
+                Name = $"{IoChannelType.AnalogShort}{i+1}",
                 RawAdapter = new DataAdapter()
                 {
                     FixSampleFrequency = true,
@@ -80,8 +80,7 @@ public class DemoIoDevice: IIoDevice
                 {
                     FixSampleFrequency = true,
                     DataType = typeof(double[]),
-                    TypeName = "Analog",
-                    
+                    TypeName = DataAdapterType.AnalogInput,
                 },
             });
         }
@@ -96,8 +95,8 @@ public class DemoIoDevice: IIoDevice
         (_analogInputs[3].Calibrater as TransducerCalibrater)!.UnitMeasure = "mV";
         _gpsInput =  new GpsInput(){
             IoDevice = this,
-            Id = $"Gps{1}",
-            Name=$"Gps{1}",
+            Id = $"{IoChannelType.GpsShort}{1}",
+            Name=$"{IoChannelType.GpsShort}{1}",
             IoPort = new GpsPort(),
             Raw = new DataAdapter(){
                 FixSampleFrequency = false,

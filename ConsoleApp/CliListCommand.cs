@@ -1,5 +1,6 @@
 using Spectre.Console.Cli;
 using Spectre.Console;
+using System.ComponentModel.DataAnnotations;
 
 public class ListCommandSettings: CommandSettings{
     
@@ -68,45 +69,43 @@ public class ListInputListCommand : Command<ListInputListCommandSettings>
     public override int Execute(CommandContext context, ListInputListCommandSettings settings)
     {
         var table = new Table();
-        var ioServices = (context.Data as AppContext).Application!.IoServiceManager;
-        List<string> columns = [
-            "Id",
-            "Name",
-            "Status",
-            "Input",
-            "Couple",
-            "Range",
-            "Gain",
-            "Offset",
-            "Calibrate",
-            "Level",
-        ];
-
+        var ioServices = (context.Data as AppContext)!.Application!.IoServiceManager;
+        List<string> columns = [];
+        List<string> propertyieNames = [];
         var analogInputs = ioServices.GetIoChannels("AnalogInput");
-        foreach (var col in columns)
+        foreach (var input in analogInputs)
         {
-            //collect columns
-            table.AddColumn(col);
+            //collect rows
+            var inputSettings = input.GetSettings();
+            var properties = inputSettings.GetType().GetProperties();
+            foreach (var property in properties){
+                var propName = property.Name;
+                var disName = propName;
+                var displayName = property.GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault() as DisplayAttribute;
+                if(displayName != null){
+                    disName = displayName.Name;
+                }
+                if(disName != null && columns.IndexOf(disName) == -1){
+                    columns.Add(disName);
+                    propertyieNames.Add(propName);
+                    table.AddColumn(disName);
+                }
+            }
         }
-
-
 
         foreach (var input in analogInputs)
         {
             //collect rows
             List<Text> row = [];
-            row.Add(new Text(input.FullId));
-            row.Add(new Text(input.Name));
-            row.Add(new Text(input.Enabled.ToString()));
-            var port = input.IoPort;
-            
-            row.Add(new Text(GetProperty(port, "Input")));
-            row.Add(new Text(GetProperty(port, "Couple")));
-            row.Add(new Text(GetProperty(port, "Range")));
-            row.Add(new Text(GetProperty(port, "Gain")));
-            row.Add(new Text(GetProperty(port, "Offset")));
-            row.Add(new Text("--"));
-            row.Add(new Text("--"));
+            foreach(var propName in propertyieNames){
+                var inputSettings = input.GetSettings();
+                var property = inputSettings.GetType().GetProperty(propName);
+                string value = "--";
+                if(property != null){
+                    value = property.GetValue(inputSettings)!.ToString()!;
+                }
+                row.Add(new Text(value));;
+            }
             table.AddRow(row);
         }
 
@@ -120,7 +119,7 @@ public class ListIoStreamTreeCommand : Command<ListIoStreamTreeCommandSettings>
     public override int Execute(CommandContext context, ListIoStreamTreeCommandSettings settings)
     {
         var root = new Tree("Streams");
-        var streamManager = (context.Data as AppContext).Application!.StreamManager;
+        var streamManager = (context.Data as AppContext)!.Application!.StreamManager;
         foreach(var classification in streamManager.Streams){
             var clsNode = root.AddNode(classification.Key);
             foreach (var stream in classification.Value){
