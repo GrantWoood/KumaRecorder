@@ -108,8 +108,19 @@ public class IoServiceManager(ILogger logger){
         return channels;
     }
 
+    public List<IIoChannel> GetIoChannels(){
+        List<IIoChannel> channels= [];
+        foreach(var service in _ioServices){
+            var chs = service.GetIoChannels();
+            foreach(var ch in chs){
+                channels.Add(ch);
+            }
+        }
+        return channels;
+    }
+
     public IIoChannel? GetIoChannel(string channelType, string channelID){
-        var channels = GetIoChannels(channelType);
+        var channels = channelType.Length > 0 ? GetIoChannels(channelType) : GetIoChannels();
         foreach(var channel  in channels ){
             if(channel.FullId == channelID){
                 return channel;

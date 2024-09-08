@@ -12,8 +12,21 @@ class CliAppBuilder{
                 });
             config.AddBranch<CliSetCommandSettings>("set",
                 set=>{
-                    set.AddCommand<CliSetAnalogCommand>("analog").WithData(context1);
+                    set.AddCommand<CliSetInputCommand>("input").WithData(context1);
                 });
+            config.AddBranch<CliSampleCommandSettings>("sample",
+                sample=>{
+                    sample.AddCommand<CliSampleStartCommand>("start").WithData(context1);
+                    sample.AddCommand<CliSampleStopCommand>("stop").WithData(context1);
+                }
+            );
+            config.AddBranch<CliAnalysisCommandSettings>("analysis", 
+            ana=>{
+                ana.AddCommand<CliAnalysisStartCommand>("start").WithData(context1);
+                ana.AddCommand<CliAnalysisStopCommand>("stop").WithData(context1);
+                ana.AddCommand<CliAnalysisPauseCommand>("pause").WithData(context1);
+                ana.AddCommand<CliAnalysisResumeCommand>("resume").WithData(context1);
+            });
         });
         
         return app;

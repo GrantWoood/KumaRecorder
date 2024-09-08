@@ -11,7 +11,7 @@ class CliSetCommandSettings: CommandSettings{
 
 }
 
-class CliSetAnalogCommandSettings: CliSetCommandSettings{
+class CliSetInputCommandSettings: CliSetCommandSettings{
     [CommandArgument(0, "[Analog Id]")]
     public string AnalogId { get; set; } = string.Empty;
 
@@ -19,15 +19,17 @@ class CliSetAnalogCommandSettings: CliSetCommandSettings{
     public string PropertyName { get; set; } = string.Empty ;
     [CommandArgument(2, "[Value]")]
     public string Value { get; set; } = string.Empty;
+    [CommandOption("-t|--type <IoChannelType>")]
+    public string IoChannelType{get;set;} =string.Empty;
 }
 
-class CliSetAnalogCommand : Command<CliSetAnalogCommandSettings>
+class CliSetInputCommand : Command<CliSetInputCommandSettings>
 {
     public override int Execute(CommandContext context, 
-        CliSetAnalogCommandSettings settings)
+        CliSetInputCommandSettings settings)
     {
         IoServiceManager serviceManager = (context.Data as AppContext)!.Application!.IoServiceManager;
-        IIoChannel? analog = serviceManager.GetIoChannel(IoChannelType.Analog, settings.AnalogId);
+        IIoChannel? analog = serviceManager.GetIoChannel(settings.IoChannelType, settings.AnalogId);
         if(analog != null){
             //Get by property name
             var analogSettings = analog.GetSettings();
@@ -47,7 +49,11 @@ class CliSetAnalogCommand : Command<CliSetAnalogCommandSettings>
             if(property != null){
                 //Run possible converter from string to value
                 var attributes = property.GetCustomAttributes(false);
-                property.SetValue(analogSettings, TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(settings.Value));
+                try{
+                    property.SetValue(analogSettings, TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(settings.Value));
+                }catch(Exception e){
+                    AnsiConsole.WriteLine(e.ToString());
+                }
             }else{
                 AnsiConsole.WriteLine($"Error: No property found for {settings.PropertyName}!");
             }

@@ -13,18 +13,17 @@ public class GpsInput: IIoChannel
         DataType = typeof(double),
         TypeName = DataAdapterType.Speed,
     };
+    private OnReceiveHandler onReceiveHandler;
     public DataAdapter? _raw;
     public DataAdapter? Raw{
         get=> _raw;
         set{
             if(_raw!= null){
-                var ac = _raw.OnReceiveAction();
-                ac -= OnReceiveRawPacket;
+                _raw.UnsubscribeReceiveEvent(onReceiveHandler);
             }
             _raw = value;
             if(_raw!= null){
-                var ac = _raw.OnReceiveAction();
-                ac += OnReceiveRawPacket;
+                _raw.SubscribeReceiveEvent(onReceiveHandler);
             }
         }
     }
@@ -38,6 +37,10 @@ public class GpsInput: IIoChannel
     }}
     public string TypeName=>IoChannelType.Gps;
     public bool Enabled{get;set;} = true;
+
+    public GpsInput(){
+         onReceiveHandler = new OnReceiveHandler(OnReceiveRawPacket) ;
+    }
     public List<IDataAdapter> GetInputAdapters(){
         return [Location, Speed];
     }
@@ -46,7 +49,7 @@ public class GpsInput: IIoChannel
         return [];
     }
 
-    private void OnReceiveRawPacket(IDataPacket packet){
+    private void OnReceiveRawPacket(IDataAdapter sender, IDataPacket packet){
 
     }
 

@@ -8,17 +8,18 @@ public abstract class AnalogInput: IIoChannel
     public required IIoDevice IoDevice { get; set; }
     public required IIoPort IoPort { get; set; }
     private IDataAdapter? _rawAdapter = null;
+    private OnReceiveHandler onReceiveHandler;
     public required IDataAdapter? RawAdapter{
         get=>_rawAdapter;
         set{
-            if(_rawAdapter != null){
-                var action = _rawAdapter.OnReceiveAction();
-                action -= OnReceiveRawPacket;
+            if (_rawAdapter != null)
+            {
+                _rawAdapter.UnsubscribeReceiveEvent(onReceiveHandler);
             }
             _rawAdapter = value;
-            if(_rawAdapter != null){
-            var action = _rawAdapter.OnReceiveAction();
-            action += OnReceiveRawPacket;
+            if (_rawAdapter != null)
+            {
+                _rawAdapter.SubscribeReceiveEvent(onReceiveHandler);
             }
         }
     }
@@ -31,7 +32,11 @@ public abstract class AnalogInput: IIoChannel
     }}
     public string TypeName=>IoChannelType.Analog;
     public bool Enabled{get;set;} = true;
-    void OnReceiveRawPacket(IDataPacket packet){
+
+    public AnalogInput(){
+        onReceiveHandler = new OnReceiveHandler(OnReceiveRawPacket);
+    }
+    void OnReceiveRawPacket(IDataAdapter sender, IDataPacket packet){
         //根据格式转换为需要的格式
         double[] values = packet.AsDoubleArray();
         for (int i = 0; i < values.Length; ++i)

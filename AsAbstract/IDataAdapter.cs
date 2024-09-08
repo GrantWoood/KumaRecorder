@@ -1,10 +1,12 @@
 namespace AsAbstract;
 
-
+public delegate void OnReceiveHandler(IDataAdapter sender, IDataPacket packet);
 public interface IDataAdapter{
+
     string Name{get;}
     string TypeName{get;}
-    Action<IDataPacket> OnReceiveAction();
+    void SubscribeReceiveEvent(OnReceiveHandler handler);
+    void UnsubscribeReceiveEvent(OnReceiveHandler handler);
     void Receive(IDataPacket packet);
     bool FixSampleFrequency{get;}
     System.Type DataType{get;}

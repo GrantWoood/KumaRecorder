@@ -68,5 +68,19 @@ public class AsApplication
         return true;
     }
 
+    public bool StartRecordAndAnalysis(){
+        return true;
+    }
 
+    public bool StopRecordAndAnalysis(){
+        return true;
+    }
+
+    public bool PauseRecordAndAnalysis(){
+        return false;
+    }
+
+    public bool ResumeRecordAndAnalysis(){
+        return false;
+    }
 }
