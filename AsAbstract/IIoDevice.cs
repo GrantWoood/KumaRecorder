@@ -2,11 +2,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace AsAbstract;
 
-public interface IIoDevice
+public interface IIoDevice : IIdObject
 {
-    string Name { get; set;}
-    string Id{get;set;}
-    string FullId{get;}
     bool Configure(IConfiguration? configuration);
     List<IIoChannel> GetIoChannels();
     List<IDataAdapter> GetInputAdapters();

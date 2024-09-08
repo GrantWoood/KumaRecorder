@@ -64,6 +64,9 @@ public class DemoIoService: IIoService
     public List<IDataAdapter> GetInputAdapters(){
         return _device.GetInputAdapters();
     }
+    public List<IDataAdapter> GetRawInputAdapters(){
+        return _device.GetInputAdapters();
+    }
 
     public bool StartSample()
     {

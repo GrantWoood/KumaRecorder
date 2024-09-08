@@ -64,25 +64,32 @@ public class DemoIoDevice: IIoDevice
     {
         for (int i = 0; i < 4; ++i)
         {
-            _analogInputs.Add(new DemoAnalogChannel()
+            var input = new DemoAnalogChannel()
             {
                 IoDevice = this,
                 IoPort = new AnalogPort(),
-                Id = $"{IoChannelType.AnalogShort}{i+1}",
-                Name = $"{IoChannelType.AnalogShort}{i+1}",
-                RawAdapter = new DataAdapter()
-                {
-                    FixSampleFrequency = true,
-                    DataType = typeof(float[])
-                },
+                Id = $"{IoChannelType.AnalogShort}{i + 1}",
+                Name = $"{IoChannelType.AnalogShort}{i + 1}",
                 Calibrater = new TransducerCalibrater(),
-                InputAdapter = new DataAdapter()
-                {
-                    FixSampleFrequency = true,
-                    DataType = typeof(double[]),
-                    TypeName = DataAdapterType.AnalogInput,
-                },
-            });
+            };
+            _analogInputs.Add(input);
+
+            input.RawAdapter = new DataAdapter()
+            {
+                FixSampleFrequency = true,
+                DataType = typeof(float[]),
+                Id = "RIn1",
+                Parent = input,
+            };
+
+            input.InputAdapter = new DataAdapter()
+            {
+                FixSampleFrequency = true,
+                DataType = typeof(double[]),
+                TypeName = DataAdapterType.AnalogInput,
+                Parent = input,
+                Id = "In1"
+            };
         }
         //2Vibration and 2 Sound for analog inputs
         (_analogInputs[0].Calibrater as TransducerCalibrater)!.UnitPhysical = "G";
@@ -98,10 +105,12 @@ public class DemoIoDevice: IIoDevice
             Id = $"{IoChannelType.GpsShort}{1}",
             Name=$"{IoChannelType.GpsShort}{1}",
             IoPort = new GpsPort(),
-            Raw = new DataAdapter(){
+        };
+        _gpsInput.Raw = new DataAdapter(){
                 FixSampleFrequency = false,
-                DataType = typeof(double[])
-            },
+                DataType = typeof(double[]),
+                Parent = _gpsInput,
+                Id = "RIn1"
         };
         return true;
     }
@@ -121,6 +130,15 @@ public class DemoIoDevice: IIoDevice
             streams.AddRange(channel.GetInputAdapters());
         }
         return streams;
+    }
+
+    public List<IDataAdapter> GetRawInputAdapters(){
+        var channels = GetIoChannels();
+        List<IDataAdapter> rawAdapters =[];
+        foreach(var channel in channels){
+            rawAdapters.AddRange(channel.GetRawAdapters());
+        }
+        return rawAdapters;
     }
 
     public bool StartSample()

@@ -5,14 +5,8 @@ namespace AsBasic;
 
 public class GpsInput: IIoChannel
 {
-    public DataAdapter Location = new DataAdapter(){
-        DataType = typeof(Location),
-        TypeName = DataAdapterType.Location,
-    };
-    public DataAdapter Speed = new DataAdapter(){
-        DataType = typeof(double),
-        TypeName = DataAdapterType.Speed,
-    };
+    public DataAdapter Location ;
+    public DataAdapter Speed ;
     private OnReceiveHandler onReceiveHandler;
     public DataAdapter? _raw;
     public DataAdapter? Raw{
@@ -38,8 +32,23 @@ public class GpsInput: IIoChannel
     public string TypeName=>IoChannelType.Gps;
     public bool Enabled{get;set;} = true;
 
-    public GpsInput(){
-         onReceiveHandler = new OnReceiveHandler(OnReceiveRawPacket) ;
+    public GpsInput()
+    {
+        onReceiveHandler = new OnReceiveHandler(OnReceiveRawPacket);
+        Location = new DataAdapter()
+        {
+            DataType = typeof(Location),
+            TypeName = DataAdapterType.Location,
+            Parent = this,
+            Id = "In1",
+        };
+        Speed = new DataAdapter()
+        {
+            DataType = typeof(double),
+            TypeName = DataAdapterType.Speed,
+            Parent = this,
+            Id = "In2",
+        };
     }
     public List<IDataAdapter> GetInputAdapters(){
         return [Location, Speed];
@@ -47,6 +56,9 @@ public class GpsInput: IIoChannel
 
     public List<IDataAdapter> GetOutputAdapters(){
         return [];
+    }
+    public List<IDataAdapter> GetRawAdapters(){
+        return [Raw];
     }
 
     private void OnReceiveRawPacket(IDataAdapter sender, IDataPacket packet){

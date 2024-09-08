@@ -1,9 +1,7 @@
 namespace AsAbstract;
 
 public delegate void OnReceiveHandler(IDataAdapter sender, IDataPacket packet);
-public interface IDataAdapter{
-
-    string Name{get;}
+public interface IDataAdapter: IIdObject{
     string TypeName{get;}
     void SubscribeReceiveEvent(OnReceiveHandler handler);
     void UnsubscribeReceiveEvent(OnReceiveHandler handler);

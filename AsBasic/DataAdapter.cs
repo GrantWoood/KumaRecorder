@@ -2,6 +2,18 @@ using AsAbstract;
 
 namespace AsBasic;
 public class DataAdapter: IDataAdapter{
+    public IIdObject? Parent{get;set;}
+    public string Id{get;set;} = string.Empty;
+    public string FullId{
+        get{
+            if(Parent==null){
+                return Id;
+            }
+            else{
+                return $"{Parent.FullId}.{Id}";
+            }
+        }
+    }
     public string CustomName{get;set;} = string.Empty;
     public string TypeName{get;set;} = String.Empty;
     public string Name{
@@ -11,6 +23,9 @@ public class DataAdapter: IDataAdapter{
             }else{
                 return CustomName;
             }
+        }
+        set{
+            CustomName = value;
         }
     }
     private event OnReceiveHandler ReceiveData;

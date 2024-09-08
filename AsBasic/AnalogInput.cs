@@ -9,7 +9,7 @@ public abstract class AnalogInput: IIoChannel
     public required IIoPort IoPort { get; set; }
     private IDataAdapter? _rawAdapter = null;
     private OnReceiveHandler onReceiveHandler;
-    public required IDataAdapter? RawAdapter{
+    public IDataAdapter? RawAdapter{
         get=>_rawAdapter;
         set{
             if (_rawAdapter != null)
@@ -24,7 +24,7 @@ public abstract class AnalogInput: IIoChannel
         }
     }
     public required ICalibrater Calibrater{ get; set; }
-    public required IDataAdapter InputAdapter{get;set; }
+    public IDataAdapter InputAdapter{get;set; }
     public string Name{get;set;} = string.Empty;
     public string Id{get;set;} = string.Empty;
     public string FullId{get{
@@ -58,6 +58,10 @@ public abstract class AnalogInput: IIoChannel
     public List<IDataAdapter> GetOutputAdapters(){
         return [];
     }
+    public List<IDataAdapter> GetRawAdapters(){
+        return [RawAdapter];
+    }
+
     public bool LoadProfile(IBundle? configuration){
         return true;
     }

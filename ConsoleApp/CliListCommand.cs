@@ -25,23 +25,22 @@ public class ListIoServiceTreeCommand : Command<ListIoServiceTreeCommandSettings
         var root = new Tree("IoServices");
         var ioServices = (context.Data as AppContext).Application!.IoServices;
         foreach(var ioService in ioServices){
-            var service = root.AddNode(ioService.Name);
+            var service = root.AddNode(new Text($"[{ioService.FullId}] {ioService.Name}"));
             var devs = ioService.GetIoDevices();
             foreach (var dev in devs)
             {
-                var devNode = service.AddNode(dev.Name);
+                var devNode = service.AddNode(new Text($"[{dev.FullId}] {dev.Name}"));
                 var inputs = ioService.GetIoChannels();
                 foreach (var input in inputs)
                 {
-                    var inNode = devNode.AddNode($"{input.Name} ({input.ToString()})");
-                    var streams = input.GetInputAdapters();
-                    foreach (var s in streams)
+                    var inNode = devNode.AddNode(new Text($"[{input.FullId}] {input.Name} ({input.TypeName})"));
+                    var adapters = input.GetInputAdapters();
+                    foreach (var s in adapters)
                     {
-                        inNode.AddNode(new Text($"[Input] {s.Name}, {s.FixSampleFrequency}, {s.DataType}"));
+                        inNode.AddNode(new Text($"[{s.FullId}] {s.Name}, {s.FixSampleFrequency}, {s.DataType}"));
                     }
                 }
             }
-
         }
         AnsiConsole.Write(root);
         return 0;
